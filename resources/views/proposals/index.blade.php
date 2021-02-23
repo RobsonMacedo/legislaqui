@@ -79,7 +79,7 @@
                     <nav class="navbar navbar-expand navbar-light mt-3 mb-2 mb-md-3">
                         <div class="d-flex flex-grow-1">
                             <div class="input-group">
-                                <input type="text"  name="search" value="{{$search}}" class="form-control border" placeholder="Busque uma ideia ...">
+                                <input type="text"  name="search" dusk="proposal-search" value="{{$search}}" class="form-control border" placeholder="Busque uma ideia ...">
                             </div>
                         </div>
                     </nav>
@@ -88,7 +88,7 @@
 
             <div class="row mb-5 controles">
                 <div class="col-12 col-md-3 mb-2 mb-md-0">
-                    {{ Form::select('state', $states, $state ,['data-width'=>'100%','data-style'=>'form-control', 'data-live-search'=>'true', 'title'=>'Situação']) }}
+                    {{ Form::select('state', $states, $state ,['data-width'=>'100%','data-style'=>'form-control', 'data-live-search'=>'true', 'title'=>'Situação', 'name'=> 'proposal_state']) }}
                 </div>
 
                 <div class="col-12 col-md-3 mb-2 mb-md-0">
@@ -99,7 +99,7 @@
                 </div>
 
                 <div class="col-12 col-md-3">
-                    <button class="btn btn-primary btn-block border border-left-0" type="submit" >
+                    <button class="btn btn-primary btn-block border border-left-0" type="submit" dusk="filterButton">
                         <i class="fas fa-search"></i> Filtrar
                     </button>
                 </div>
