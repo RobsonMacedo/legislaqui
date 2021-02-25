@@ -122,7 +122,7 @@
 
                             @foreach(['facebook', 'twitter'] as $provider)
                                 <div class="social-login mt-3">
-                                    <a class="btn btn-primary btn-block btn-{{$provider}}" href="{{ route('social.login', ['provider' => $provider]) }}">
+                                    <a class="btn btn-primary btn-block btn-{{$provider}}" dusk='buttomFacebookLogin' href="{{ route('social.login', ['provider' => $provider]) }}">
                                         <span class= 'fab fa-fw fa-{{$provider}}'></span>
                                         Entrar com {{ ucwords($provider) }}
                                     </a>
