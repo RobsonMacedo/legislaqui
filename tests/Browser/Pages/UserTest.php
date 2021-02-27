@@ -48,7 +48,7 @@ class UserTest extends DuskTestCase
                 ->pause(1000)
                 ->screenshot('after-register');
         });
-        $this->assertDatabaseHas('users', ['name' => $newUser['name']]);
+        $this->assertDatabaseHas('users', ['email' => $newUser['email']]);
     }
 
     public function testLogin()
