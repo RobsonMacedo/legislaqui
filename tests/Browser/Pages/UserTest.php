@@ -46,9 +46,13 @@ class UserTest extends DuskTestCase
                 ->screenshot('register')
                 ->click('@registerButton')
                 ->pause(1000)
-                ->screenshot('after-register');
+                ->screenshot('after-register')
+                ->assertAuthenticatedAs(
+                    app(UsersRepository::class)->findByEmail(
+                        $newUser['email']
+                    )
+                );
         });
-        $this->assertDatabaseHas('users', ['email' => $newUser['email']]);
     }
 
     public function testLogin()
