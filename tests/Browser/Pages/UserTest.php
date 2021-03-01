@@ -16,6 +16,7 @@ class UserTest extends DuskTestCase
     public function init()
     {
         static::$newUser = factory(User::class)->raw();
+        dd(static::$newUser);
         static::$randomUser = User::all()
             ->random()
             ->toArray();
@@ -46,13 +47,9 @@ class UserTest extends DuskTestCase
                 ->screenshot('register')
                 ->click('@registerButton')
                 ->pause(1000)
-                ->screenshot('after-register')
-                ->assertAuthenticatedAs(
-                    app(UsersRepository::class)->findByEmail(
-                        $newUser['email']
-                    )
-                );
+                ->screenshot('after-register');
         });
+        $this->assertDatabaseHas('users', ['email' => $newUser['email']]);
     }
 
     public function testLogin()
