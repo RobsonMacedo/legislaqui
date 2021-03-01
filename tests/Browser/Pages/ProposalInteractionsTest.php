@@ -102,6 +102,7 @@ class ProposalInteractionsTest extends DuskTestCase
             $randomUser,
             $randomProposal
         ) {
+            dd($randomProposal->id);
             $browser
                 ->loginAs($randomUser['id'])
                 ->visit('/proposals/' . $randomProposal->id)

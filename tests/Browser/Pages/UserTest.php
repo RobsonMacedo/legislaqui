@@ -16,7 +16,6 @@ class UserTest extends DuskTestCase
     public function init()
     {
         static::$newUser = factory(User::class)->raw();
-        dd(static::$newUser);
         static::$randomUser = User::all()
             ->random()
             ->toArray();
