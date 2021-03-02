@@ -21,6 +21,11 @@ class UserTest extends DuskTestCase
             ->toArray();
     }
 
+    /**
+     * @test
+     * @group testRegister
+     * @group link
+     */
     public function testRegister()
     {
         $this->init();
@@ -29,7 +34,6 @@ class UserTest extends DuskTestCase
         $whatsapp =  app(Faker::class)->cellphone();
 
         $this->browse(function (Browser $browser) use ($newUser,$ddd,$whatsapp) {
-
             $browser
                 ->logout()
                 ->visit('/register')

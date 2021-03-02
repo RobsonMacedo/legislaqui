@@ -23,6 +23,11 @@ class ProposalInteractionsTest extends DuskTestCase
             ->toArray();
     }
 
+    /**
+     * @test
+     * @group testLikeProposal
+     * @group link
+     */
     public function testLikeProposal()
     {
         $this->init();
@@ -49,6 +54,11 @@ class ProposalInteractionsTest extends DuskTestCase
         ]);
     }
 
+    /**
+     * @test
+     * @group testDisLikeProposal
+     * @group link
+     */
     public function testDisLikeProposal()
     {
         $this->init();
@@ -73,6 +83,11 @@ class ProposalInteractionsTest extends DuskTestCase
         ]);
     }
 
+    /**
+     * @test
+     * @group testSupportProposal
+     * @group link
+     */
     public function testSupportProposal()
     {
         $this->init();
@@ -92,17 +107,21 @@ class ProposalInteractionsTest extends DuskTestCase
         });
     }
 
+    /**
+     * @test
+     * @group testFollowProposal
+     * @group link
+     */
     public function testFollowProposal()
     {
         $this->init();
         $randomUser = static::$randomUser;
-        $randomProposal = DB::table('proposals')->whereNotNull('approved_at')->whereNotNull('approved_by')->inRandomOrder()->first();
+        $randomProposal = DB::table('proposals')->whereNotNull('approved_at')->whereNotNull('approved_by')->where('responder_id' ,'=',null)->inRandomOrder()->first();
 
         $this->browse(function (Browser $browser) use (
             $randomUser,
             $randomProposal
         ) {
-            dd($randomProposal->id);
             $browser
                 ->loginAs($randomUser['id'])
                 ->visit('/proposals/' . $randomProposal->id)
