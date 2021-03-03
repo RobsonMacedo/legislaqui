@@ -50,9 +50,9 @@ class UserTest extends DuskTestCase
                 ->screenshot('register')
                 ->click('@registerButton')
                 ->pause(1000)
+                ->assertSee($newUser['name'])
                 ->screenshot('after-register');
         });
-        $this->assertDatabaseHas('users', ['email' => $newUser['email']]);
     }
 
     public function testLogin()

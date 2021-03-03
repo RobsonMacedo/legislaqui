@@ -154,9 +154,7 @@ class AplicationFlowTest extends DuskTestCase
                 $this->assertDatabaseHas('proposals', ['name' =>  $newProposal['name']]);
             $aprovador
                 ->loginAs($approval['id'])
-                ->visit('/admin/proposals/'.$id_proposal)
-                ->press('@proposal_moderate')
-                ->assertSee($newProposal['idea_exposition'])
+                ->visit('/admin/proposals/'.$id_proposal.'/response')
                 ->type('response',$answer)
                 ->press('@approve')
                 ->waitforText('Ideia Legislativa Aprovada com Sucesso')
