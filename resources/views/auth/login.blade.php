@@ -118,17 +118,22 @@
 
 
                             </div>
+                          
+                            <div class="social-login mt-3">
+                                <a class="btn btn-primary btn-block btn-facebook" dusk='buttomFacebookLogin' href="{{ route('social.login', ['provider' => 'facebook']) }}">
+                                    <span class= 'fab fa-fw fa-facebook'></span>
+                                    Entrar com {{ ucwords('facebbok') }}
+                                </a>
+                            </div>
+
+                            <div class="social-login mt-3">
+                                <a class="btn btn-primary btn-block btn-twitter" dusk='buttomTwitterLogin' href="{{ route('social.login', ['provider' => 'twitter']) }}">
+                                    <span class= 'fab fa-fw fa-twitter'></span>
+                                    Entrar com {{ ucwords('twitter') }}
+                                </a>
+                            </div>
 
 
-                            @foreach(['facebook', 'twitter'] as $provider)
-                                <div class="social-login mt-3">
-                                    <a class="btn btn-primary btn-block btn-{{$provider}}" dusk='buttomFacebookLogin' href="{{ route('social.login', ['provider' => $provider]) }}">
-                                        <span class= 'fab fa-fw fa-{{$provider}}'></span>
-                                        Entrar com {{ ucwords($provider) }}
-                                    </a>
-                                </div>
-
-                            @endforeach
                             @if ($errors->any())
                                 <div class="alert alert-danger">
                                     @foreach ($errors->all() as $error)
