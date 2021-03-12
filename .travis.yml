@@ -2,7 +2,6 @@ os: linux
 dist: bionic
 language: php
 php:
-  - 7.2
   - 7.3
   - 7.4
 services:
@@ -18,7 +17,6 @@ addons:
       - postgresql-12
       - postgresql-client-12
       - postgresql-server-dev-12
-
 cache:
   directories:
     - $HOME/.composer/cache
