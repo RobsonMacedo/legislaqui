@@ -43,7 +43,6 @@ Route::get('/logout', function () {
     return redirect('/');
 });
 
-
 Route::group(['middleware' => 'web'], function () {
     Route::get('/teste', 'SocialAuthController@redirectToProvider');
 
