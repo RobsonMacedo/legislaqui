@@ -11,24 +11,16 @@ use Faker\Generator as Faker;
 
 class SocialLoginTest extends DuskTestCase
 {
-  
-    private static $user;
-
-
-    public function page($browser){
-        if ($browser->assertsee('Houve um acesso incomum à sua conta. Para ajudar a mantê-la protegida, insira seu número de celular ou endereço de e-mail para confirmar que é você.')) {
+    public function page($browser){ 
+        if ($browser->element('#filter-proposals')){
             
-            $browser->type('session[username_or_email]', 'testealerj')
-            ->type('session[password]', 'Alerjteste123')
-            ->script('document.querySelector("div[class=\'css-901oao r-1awozwy r-jwli3a r-6koalj r-18u37iz r-16y2uox r-1qd0xha r-a023e6 r-b88u0q r-1777fci r-ad9z0x r-dnmrzs r-bcqeeo r-q4m81j r-qvutc0\']").click();');
-            $browser->waitForText('Quer propor um projeto na Alerj?')
-                ->visit('/logout')
+            $browser->visit('/logout')
                 ->waitForText('Registrar-se')
                 ->assertSee('Registrar-se')
-                ->screenshot('fim do login twitter com duas verificações');
+                ->screenshot('fim do login twitter com uma verificação');
             }
         
-        elseif ($browser->assertsee('Log in to Twitter')) {
+        while ($browser->element('#react-root')){
                 
                 $browser->type('session[username_or_email]', 'testealerj')
                 ->type('session[password]', 'Alerjteste123')
@@ -39,17 +31,7 @@ class SocialLoginTest extends DuskTestCase
                     ->assertSee('Registrar-se')
                     ->screenshot('fim do login twitter com duas verificações');
                 }
-
-        elseif ($browser->waitForText('Quer propor um projeto na Alerj?')){
-                
-                $browser->visit('/logout')
-                ->waitForText('Registrar-se')
-                ->assertSee('Registrar-se')
-                ->screenshot('fim do login twitter com uma verificação');
             }
-        }
-        
-    
     /**
         * @test
         * @group testSocialLoginFacebook
@@ -73,7 +55,6 @@ class SocialLoginTest extends DuskTestCase
                 ->assertSee('Registrar-se')
                 ->screenshot('fim do login facebook');
         });
-        
     }
 
     /**
@@ -94,10 +75,9 @@ class SocialLoginTest extends DuskTestCase
                 ->type('#username_or_email', 'testealerj@gmail.com')
                 ->type('#password', 'Alerjteste123')
                 ->press('#allow')
-                ->pause(2000)
-                ->$this->page($browser);               
+                ->pause(2000);
+                $this->page($browser);               
         });
-        
     }
 
     /**
@@ -117,9 +97,6 @@ class SocialLoginTest extends DuskTestCase
                 ->visit('/login')
                 ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
                 ->press('@buttomFacebookLogin')
-                /* ->type('#email', 'testealerj@gmail.com')
-                ->type('#pass', 'Alerjteste123')
-                ->press('#loginbutton') */
                 ->pause(2000)
                 ->assertSee('Quer propor um projeto na Alerj?')
                 ->pause(2000)
@@ -155,9 +132,6 @@ class SocialLoginTest extends DuskTestCase
                 ->visit('/login')
                 ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
                 ->press('@buttomTwitterLogin')
-                /* ->type('#username_or_email', 'testealerj@gmail.com')
-                ->type('#password', 'Alerjteste123')
-                ->press('#allow') */
                 ->pause(2000)
                 ->assertSee('Quer propor um projeto na Alerj?')
                 ->pause(2000)
