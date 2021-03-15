@@ -24,8 +24,15 @@ class ProposalAbilitiesTest extends DuskTestCase
             ->random()
             ->toArray();
         static::$newUser = factory(User::class)->raw();
-        static::$randomUser = User::all()
-            ->random()
+
+        static::$randomUser = User::whereExists(function ($query) {
+            $query
+                ->select(DB::raw(1))
+                ->from('proposals')
+                ->whereColumn('proposals.user_id', 'users.id');
+        })
+            ->inRandomOrder()
+            ->first()
             ->load('proposals')
             ->toArray();
     }
