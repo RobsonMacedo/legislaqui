@@ -88,7 +88,7 @@
 
             <div class="row mb-5 controles">
                 <div class="col-12 col-md-3 mb-2 mb-md-0">
-                    {{ Form::select('state', $states, $state ,['data-width'=>'100%','data-style'=>'form-control', 'data-live-search'=>'true', 'title'=>'Situação', 'name'=> 'proposal_state']) }}
+                    {{ Form::select('state', $states, $state ,['data-width'=>'100%','data-style'=>'form-control', 'data-live-search'=>'true', 'title'=>'Situação', 'name'=> 'state']) }}
                 </div>
 
                 <div class="col-12 col-md-3 mb-2 mb-md-0">
