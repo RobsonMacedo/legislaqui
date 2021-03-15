@@ -27,8 +27,8 @@
                                             {{--Proposal Moderation--}}
                                             <div class="pull-left botao">
                                                 @if ($proposal->state == App\Enums\ProposalState::NotModerated || $proposal->state == App\Enums\ProposalState::Approved ||$proposal->state == App\Enums\ProposalState::Disapproved || $proposal->state == App\Enums\ProposalState::Supported)
-                                                    <a href="{{ route('admin.proposal.response', ['id' => $proposal->id]) }}" class="btn btn-info botao" role="button">
-                                                        <i class="fa fa-cog fa-spin fa fa-fw"></i> Moderar essa Ideia! </a>
+                                                    <a href="{{ route('admin.proposal.response', ['id' => $proposal->id]) }}" class="btn btn-info botao" role="button" dusk="proposal_moderate">
+                                                        <i class="fa fa-cog fa-spin fa fa-fw" ></i> Moderar essa Ideia! </a>
                                                 @else
                                                     <i class="fa fa-check-square text-success" aria-hidden="true"></i> Esta Ideia Legislativa já foi Moderada.
                                                 @endif

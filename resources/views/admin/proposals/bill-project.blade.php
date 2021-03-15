@@ -24,6 +24,7 @@
                         {{ Form::text('number', null,
                             array('required',
                                   'class'=>'campo',
+                                  'dusk'=>'number',
                                   'placeholder'=>'Número do Projeto de Lei')) }}
                     </div>
 
@@ -32,6 +33,7 @@
                         {{ Form::text('year', null,
                             array('required',
                                   'class'=>'campo',
+                                  'dusk'=>'year',
                                   'placeholder'=>'Ano')) }}
                     </div>
 
@@ -40,6 +42,7 @@
                         {{ Form::text('owner', null,
                             array('required',
                                   'class'=>'campo',
+                                  'dusk'=>'owner',
                                   'placeholder'=>'Deputado Responsável')) }}
                     </div>
 
@@ -48,12 +51,13 @@
                         {{ Form::text('link', null,
                             array('required',
                                   'class'=>'campo',
+                                  'dusk'=>'link',
                                   'placeholder'=>'Insira o Link')) }}
                     </div>
 
                     <div class="form-group">
                         {{ Form::submit('Gravar',
-                          array('class'=>'btn btn-primary botao')) }}
+                          array('class'=>'btn btn-primary botao', 'dusk'=>'submit_button-billproject')) }}
                     </div>
 
                     {{ Form::close() }}

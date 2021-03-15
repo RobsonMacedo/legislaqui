@@ -4,6 +4,7 @@ namespace Tests\Browser\Pages;
 
 use App\Repositories\UsersRepository;
 use App\Data\Models\User;
+use Faker\Generator as Faker;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
@@ -20,30 +21,38 @@ class UserTest extends DuskTestCase
             ->toArray();
     }
 
+    /**
+     * @test
+     * @group testRegister
+     * @group link
+     */
     public function testRegister()
     {
         $this->init();
         $newUser = static::$newUser;
+        $ddd = random_int(11,89);
+        $whatsapp =  app(Faker::class)->cellphone();
 
-        $this->browse(function (Browser $browser) use ($newUser) {
+        $this->browse(function (Browser $browser) use ($newUser,$ddd,$whatsapp) {
             $browser
                 ->logout()
-                ->visit('/login')
-                ->assertSee('Nome')
+                ->visit('/register')
                 ->type('name', $newUser['name'])
-                ->type('@register-email', $newUser['email'])
+                ->type('email', $newUser['email'])
+                ->type('whatsapp',$ddd.$whatsapp)
                 ->type('cpf', $newUser['cpf'])
                 //                ->type('@register-password',$newUser['password'])
-                ->type('@register-password', '12345678')
+                ->type('password', '12345678')
                 //                ->type('password_confirmation',$newUser['password'])
                 ->type('password_confirmation', '12345678')
-                ->select('uf', $newUser['uf'])
+                ->select('city_id', random_int(1,92))
+                ->check('terms')
                 ->screenshot('register')
                 ->click('@registerButton')
                 ->pause(1000)
+                ->assertSee($newUser['name'])
                 ->screenshot('after-register');
         });
-        $this->assertDatabaseHas('users', ['name' => $newUser['name']]);
     }
 
     public function testLogin()

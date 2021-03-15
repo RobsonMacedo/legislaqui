@@ -27,6 +27,7 @@
                 {{ Form::text('name', null,
                     array('required',
                           'class'=>'campo form-control',
+                          'dusk'=>'name_field',
                           'placeholder'=>'Digite aqui o título da Ideia')) }}
             </div>
         </div>
@@ -61,6 +62,7 @@
                 {{ Form::textarea('idea_exposition', null,
                     array('required',
                           'class'=>'textarea form-control',
+                          'dusk'=>'exposionidea_field',
                           'placeholder'=>'Descreva de forma completa a sua Ideia. Dê todos os detalhes que achar necessário.')) }}
             </div>
         </div>
@@ -70,7 +72,8 @@
         <div class="row form-group pt-2 pb-2 text-right">
             <div class="col-12 ">
                 {{ Form::submit('Enviar proposta de ideia',
-                  array('class'=>'btn btn-primary botao')) }}
+                  array('class'=>'btn btn-primary botao',
+                  'dusk'=>'submitbuttonproposal')) }}
             </div>
         </div>
         {{ Form::close() }}

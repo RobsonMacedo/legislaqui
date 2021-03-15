@@ -35,7 +35,7 @@
 
                                 @if($proposal->state == App\Enums\ProposalState::NotModerated)
                                     {{ Form::submit('Aprovar!',
-                                    array('name' => 'approvalBtn', 'class'=>'btn btn-primary botao')) }}
+                                    array('name' => 'approvalBtn', 'class'=>'btn btn-primary botao','dusk'=>'approve')) }}
                                     {{ Form::submit('Desaprovar',
                                     array('name' => 'disapprovalBtn', 'class'=>'btn btn-danger botao')) }}
                                 @elseif($proposal->state == App\Enums\ProposalState::Approved || $proposal->state == App\Enums\ProposalState::Supported)
@@ -43,7 +43,7 @@
                                     array('name' => 'disapprovalBtn', 'class'=>'btn btn-danger botao')) }}
                                 @elseif($proposal->state == App\Enums\ProposalState::Disapproved)
                                     {{ Form::submit('Aprovar!',
-                                    array('name' => 'approvalBtn', 'class'=>'btn btn-primary botao')) }}
+                                    array('name' => 'approvalBtn', 'class'=>'btn btn-primary botao','dusk'=>'approve')) }}
                                     {{ Form::submit('Alterar reposta',
                                     array('name' => 'disapprovalBtn', 'class'=>'btn btn-danger botao')) }}
 

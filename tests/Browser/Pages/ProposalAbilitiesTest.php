@@ -4,6 +4,9 @@ namespace Tests\Browser\Pages;
 
 use App\Data\Models\User;
 use App\Data\Models\Proposal;
+use App\Enums\ProposalState;
+use App\Enums\ProposalState as State;
+use Illuminate\Support\Facades\DB;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
@@ -40,14 +43,13 @@ class ProposalAbilitiesTest extends DuskTestCase
                 ->loginAs($randomUser['id'])
                 ->visit('/')
                 ->click('@newProposalButton')
-                ->assertSee('PROPOR IDEIA LEGISLATIVA')
+                ->assertSee('Propor Ideia Legislativa')
                 ->type('@name_field', $newProposal['name'])
-                ->type('@problem_field', $newProposal['problem'])
                 ->type('@exposionidea_field', $newProposal['idea_exposition'])
                 ->screenshot('filledProposal-created')
                 ->click('@submitbuttonproposal')
                 ->pause(5000)
-                ->assertSee($newProposal['problem'])
+                ->assertSee($newProposal['idea_exposition'])
                 ->screenshot('proposalSuccessfullyCreated');
         });
         $this->assertDatabaseHas('proposals', ['name' => $newProposal['name']]);
@@ -70,12 +72,11 @@ class ProposalAbilitiesTest extends DuskTestCase
                 ->visit('/proposals/' . $randomProposal['id'])
                 ->click('@novaIdeia')
                 ->type('@name_field', $newProposal['name'])
-                ->type('@problem_field', $newProposal['problem'])
                 ->type('@exposionidea_field', $newProposal['idea_exposition'])
                 ->screenshot('filledProposal-included')
                 ->click('@submitbuttonproposal')
                 ->pause(5000)
-                ->assertSee($newProposal['problem'])
+                ->assertSee($newProposal['idea_exposition'])
                 ->screenshot('proposalSuccessfullyIncluded');
         });
         $this->assertDatabaseHas('proposals', ['name' => $newProposal['name']]);
@@ -85,33 +86,30 @@ class ProposalAbilitiesTest extends DuskTestCase
     {
         $this->init();
         $randomUser = static::$randomUser;
-        $randomProposal1 = Proposal::all()->random();
-        $randomProposal1->user_id = $randomUser['id'];
-        $randomProposal1->save();
-        $randomProposal = Proposal::find($randomProposal1->id);
-
+        $randomProposal = DB::table('proposals')->where('approved_at', '=', null)->where('approved_by', '=', null)->where('disapproved_by', '=', null)->inRandomOrder()->first();
+        $id = $randomProposal->id;
         $this->browse(function (Browser $browser) use (
             $randomUser,
-            $randomProposal
+            $randomProposal,
+            $id
         ) {
             $browser
                 ->loginAs($randomUser['id'])
-                ->visit('/proposals/' . $randomProposal['id'])
+                ->visit('/proposals/'.$id)
                 ->click('@editIdea')
-                ->type('@name-edit_field', $randomProposal['name'] . '**')
-                ->type('@problem-edit_field', $randomProposal['problem'] . '**')
+                ->type('@name-edit_field', $randomProposal->name . '**')
                 ->type(
                     '@exposionidea-edit_field',
-                    $randomProposal['idea_exposition'] . '**'
+                    $randomProposal->idea_exposition . '**'
                 )
                 ->click('@savebutton')
                 ->pause(5000)
-                ->assertSee($randomProposal['problem'] . '**')
+                ->assertSee($randomProposal->idea_exposition . '**')
                 ->screenshot('proposalSuccessfullyEdited');
         });
         $this->assertDatabaseHas('proposals', [
-            'name' => $randomProposal['name'] . '**',
-            'problem' => $randomProposal['problem'] . '**'
+            'name' => $randomProposal->name. '**',
+            'idea_exposition' => $randomProposal->idea_exposition. '**'
         ]);
     }
 }

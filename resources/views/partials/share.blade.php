@@ -21,13 +21,13 @@
 
         @if($proposal->isFollowable())
             @if (!Auth::check())
-                <a href="{{ route('proposal.follow', $proposal->id) }}" onclick="if(!confirm('Para acompanhar uma ideia legislativa você precisa criar uma conta na página da ALERJ.')){return false;};">
+                <a dusk="follow" href="{{ route('proposal.follow', $proposal->id) }}" onclick="if(!confirm('Para acompanhar uma ideia legislativa você precisa criar uma conta na página da ALERJ.')){return false;};">
                     <i class="fas fa-asterisk" aria-hidden="true"></i><span class="hidden-xs">Acompanhar</span></a>
             @elseif (Auth::check() && $proposal->isFollowedByCurrentUser())
-                <a href="{{ route('proposal.unfollow', $proposal->id) }}">
+                <a dusk="unfollow"href="{{ route('proposal.unfollow', $proposal->id) }}">
                     <i class="fas fa-asterisk" aria-hidden="true"></i><span class="hidden-xs">Deixar de acompanhar</span></a>
             @else
-                <a href="{{ route('proposal.follow', $proposal->id) }}">
+                <a dusk="follow" href="{{ route('proposal.follow', $proposal->id) }}">
                     <i class="fas fa-asterisk" aria-hidden="true"></i><span class="hidden-xs">Acompanhar</span></a>
             @endif
         @endIf
