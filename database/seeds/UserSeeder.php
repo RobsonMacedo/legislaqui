@@ -25,8 +25,6 @@ class UserSeeder extends Seeder
         factory(\App\Data\Models\User::class, rand(20, 50))
             ->create()
             ->each(function ($user) {
-                //echo "user: $user->id\n";
-
                 foreach (range(1, rand(2, 4)) as $x) {
                     $proposals = factory(
                         \App\Data\Models\Proposal::class,
@@ -41,27 +39,18 @@ class UserSeeder extends Seeder
                     }
 
                     //Likes
-                    factory(
-                        \App\Data\Models\Like::class,
-                        random_int(0, 30)
-                    )->create();
+                    factory(\App\Data\Models\Like::class, random_int(0, 30))->create();
 
                     //Follows
-                    factory(
-                        \App\Data\Models\ProposalFollow::class,
-                        random_int(0, 15)
-                    )->create();
+                    factory(\App\Data\Models\ProposalFollow::class, random_int(0, 15))->create();
                 }
             });
 
-        //        dd(get_role_id(Constants::ROLE_ADMIN));
         //Administrator
-        dump(
-            factory(\App\Data\Models\User::class, 'admin', 1)->create([
-                'name' => 'Adm',
-                'email' => 'adm@test.com',
-                'password' => Hash::make('secret')
-            ])
-        );
+        factory(\App\Data\Models\User::class, 'admin', 1)->create([
+            'name' => 'Adm',
+            'email' => 'adm@test.com',
+            'password' => Hash::make('secret'),
+        ]);
     }
 }
