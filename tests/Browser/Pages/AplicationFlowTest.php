@@ -3,6 +3,7 @@
 namespace Tests\Browser\Pages;
 
 use App\Data\Models\Proposal;
+use App\Enums\ProposalState;
 use App\Repositories\RolesRepository;
 use App\Support\Constants;
 use Laravel\Dusk\Browser;
@@ -40,16 +41,20 @@ class AplicationFlowTest extends DuskTestCase
 
     public function search($browser, $ideia, $array)
     {
-        foreach ($array as $item) {
+        foreach ($array as $key => $bool) {
+            //dump(str_replace('\\', '', $key));
+
             $browser
                 ->visit('/proposals')
                 ->type('@proposal-search', $ideia['name'])
                 ->press('@filterButton')
                 ->pause(2000)
-                ->select('state', $item)
+                ->select('state', $key)
+                //->screenshot(str_replace('\\', '', $key))
                 ->press('@filterButton')
                 ->pause(1000);
-            if ($item) {
+
+            if ($bool) {
                 $browser->assertSee($ideia['idea_exposition']);
             } else {
                 $browser->assertDontSee($ideia['idea_exposition']);
@@ -80,7 +85,7 @@ class AplicationFlowTest extends DuskTestCase
                 ->press('@support')
                 ->pause(2000)
                 ->screenshot('supported');
-        } while ($total_support <= 5);
+        } while ($total_support <= 5); //TODO: Não usar hardcode para o número de apoios. Pode usar o config('global.approvalGoal')
         return $total_support;
     }
 
@@ -93,49 +98,53 @@ class AplicationFlowTest extends DuskTestCase
         $answer = app(Faker::class)->paragraph();
         $owner_name = app(Faker::class)->name();
         $comission = static::$commission;
-        $array1 = [
-            true => '["Todas"]',
-            false => '["Aprovadas","Alcan\u00e7aram apoios suficientes"]',
-            false => '["Alcan\u00e7aram apoios suficientes"]',
-            false => '["Enviadas para a Comiss\u00e3o de Normas"]',
-            false => '["Expiradas"]',
-            false => '["Viraram projeto de lei"]',
+
+        $allArray = [
+            json_encode([ProposalState::All]) => true,
+            json_encode(ProposalState::openStates()) => false,
+            json_encode([ProposalState::Supported]) => false,
+            json_encode([ProposalState::Sent]) => false,
+            json_encode([ProposalState::Expired]) => false,
+            json_encode([ProposalState::BillProject]) => false,
         ];
-        $array2 = [
-            true => '["Todas"]',
-            true => '["Aprovadas","Alcan\u00e7aram apoios suficientes"]',
-            false => '["Alcan\u00e7aram apoios suficientes"]',
-            false => '["Enviadas para a Comiss\u00e3o de Normas"]',
-            false => '["Expiradas"]',
-            false => '["Viraram projeto de lei"]',
+
+        $openProposalsArray = [
+            json_encode([ProposalState::All]) => true,
+            json_encode(ProposalState::openStates()) => true,
+            json_encode([ProposalState::Supported]) => false,
+            json_encode([ProposalState::Sent]) => false,
+            json_encode([ProposalState::Expired]) => false,
+            json_encode([ProposalState::BillProject]) => false,
         ];
-        $array3 = [
-            true => '["Todas"]',
-            true => '["Aprovadas","Alcan\u00e7aram apoios suficientes"]',
-            true => '["Alcan\u00e7aram apoios suficientes"]',
-            false => '["Enviadas para a Comiss\u00e3o de Normas"]',
-            false => '["Expiradas"]',
-            false => '["Viraram projeto de lei"]',
+
+        $sentToCommitteeArray = [
+            json_encode([ProposalState::All]) => true,
+            json_encode(ProposalState::openStates()) => false,
+            json_encode([ProposalState::Supported]) => false,
+            json_encode([ProposalState::Sent]) => true,
+            json_encode([ProposalState::Expired]) => false,
+            json_encode([ProposalState::BillProject]) => false,
         ];
-        $array4 = [
-            true => '["Todas"]',
-            false => '["Aprovadas","Alcan\u00e7aram apoios suficientes"]',
-            false => '["Alcan\u00e7aram apoios suficientes"]',
-            false => '["Enviadas para a Comiss\u00e3o de Normas"]',
-            false => '["Expiradas"]',
-            true => '["Viraram projeto de lei"]',
+
+        $billProjectArray = [
+            json_encode([ProposalState::All]) => true,
+            json_encode(ProposalState::openStates()) => false,
+            json_encode([ProposalState::Supported]) => false,
+            json_encode([ProposalState::Sent]) => false,
+            json_encode([ProposalState::Expired]) => false,
+            json_encode([ProposalState::BillProject]) => true,
         ];
 
         $this->browse(function (Browser $cidadao, Browser $aprovador, Browser $comissao) use (
             $citizen,
             $newProposal,
-            $array1,
+            $allArray,
             $approval,
             $answer,
-            $array2,
-            $array3,
+            $openProposalsArray,
+            $sentToCommitteeArray,
             $comission,
-            $array4,
+            $billProjectArray,
             $owner_name
         ) {
             $cidadao
@@ -152,7 +161,7 @@ class AplicationFlowTest extends DuskTestCase
             $url = $cidadao->driver->getCurrentURL();
             $last = explode('/', $url);
             $id_proposal = end($last);
-            $this->search($cidadao, $newProposal, $array1);
+            $this->search($cidadao, $newProposal, $allArray);
             $this->assertDatabaseHas('proposals', ['name' => $newProposal['name']]);
             $aprovador
                 ->loginAs($approval['id'])
@@ -162,23 +171,27 @@ class AplicationFlowTest extends DuskTestCase
                 ->waitforText('Ideia Legislativa Aprovada com Sucesso')
                 ->screenshot('2-approval_approved_proposal');
             $cidadao->loginAs($citizen['id']);
-            $this->search($cidadao, $newProposal, $array2);
-            ////           //Cidadão de 2 até 7
+            $this->search($cidadao, $newProposal, $openProposalsArray);
+
+            ////Cidadão de 2 até 7
             $this->support($id_proposal, $cidadao, $url);
+
             $cidadao->visit('proposals/' . $id_proposal)->assertSee('Alcançou apoios suficientes');
             $aprovador
                 ->loginAs($approval['id'])
                 ->visit('/admin/proposals/approval-goal')
-                ->visit('/admin/proposals/' . $id_proposal . '/to-committee')
+                ->visit('/admin/proposals/' . $id_proposal . '/to-committee') //TODO: usar o botão
                 ->pause(1000)
                 ->screenshot('3-proposal_sent_to_comission')
                 ->pause(2000);
+
             $cidadao
                 ->loginAs($citizen['id'])
                 ->visit('proposals/' . $id_proposal)
                 ->assertSee('Enviada para a comissão')
                 ->screenshot('4-Enviada para a comissão');
-            $this->search($cidadao, $newProposal, $array3);
+            $this->search($cidadao, $newProposal, $sentToCommitteeArray);
+
             $comissao
                 ->loginAs($comission['id'])
                 ->visit('/admin/proposals/in-committee')
@@ -191,7 +204,7 @@ class AplicationFlowTest extends DuskTestCase
                 ->visit('proposals/' . $id_proposal)
                 ->assertSee('Em discussão pela comissão')
                 ->screenshot('6-Em discussão pela comissão');
-            $this->search($cidadao, $newProposal, $array4);
+            $this->search($cidadao, $newProposal, $billProjectArray);
             $comissao
                 ->loginAs($comission['id'])
                 ->visit('/admin/proposals/approved-by-committee')
@@ -208,7 +221,7 @@ class AplicationFlowTest extends DuskTestCase
                 ->visit('proposals/' . $id_proposal)
                 ->assertSee('Virou projeto de lei')
                 ->screenshot('8-VIROU PROJETO DE LEI');
-            $this->search($cidadao, $newProposal, $array4);
+            $this->search($cidadao, $newProposal, $billProjectArray);
         });
     }
 }

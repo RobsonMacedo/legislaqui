@@ -86,7 +86,7 @@ class ProposalAbilitiesTest extends DuskTestCase
     public function testEditProposal()
     {
         $this->init();
-        $randomUser = static::$randomUser; //TODO: Esse usuário deve ter garantidamente uma proposal ao menos
+        $randomUser = static::$randomUser;
 
         $randomProposal = DB::table('proposals')
             ->where('approved_at', '=', null)

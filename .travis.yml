@@ -35,6 +35,10 @@ before_script:
   - cp .env.travis .env.dusk.local
   - printf "SOCIAL_LOGIN_PASS=\"" >> .env.travis;
   - printf "\"321etsetjrelA" | rev >> .env.travis;
+  - printf "FACEBOOK_CLIENT_SECRET=\"" >> .env.travis;
+  - printf "\"4f51d06924b689998cc22ac6e6cdc95c" | rev >> .env.travis;
+  - printf "TWITTER_SECRET=\"" >> .env.travis;
+  - printf "\"Bj4Hx67e6aqXXG4fIOzxeRmdzGxDwiHX4JLLQTdMsVdVRjuEJi" | rev >> .env.travis;
   - travis_retry composer install --prefer-source
   - php artisan key:generate
   - psql -V
