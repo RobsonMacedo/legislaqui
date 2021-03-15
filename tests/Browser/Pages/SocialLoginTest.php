@@ -22,8 +22,8 @@ class SocialLoginTest extends DuskTestCase
         
         while ($browser->element('#react-root')){
                 
-                $browser->type('session[username_or_email]', 'testealerj')
-                ->type('session[password]', 'Alerjteste123')
+                $browser->type('session[username_or_email]', env('SOCIAL_LOGIN_USER'))
+                ->type('session[password]', env('SOCIAL_LOGIN_PASS'))
                 ->script('document.querySelector("div[class=\'css-901oao r-1awozwy r-jwli3a r-6koalj r-18u37iz r-16y2uox r-1qd0xha r-a023e6 r-b88u0q r-1777fci r-ad9z0x r-dnmrzs r-bcqeeo r-q4m81j r-qvutc0\']").click();');
                 $browser->waitForText('Quer propor um projeto na Alerj?')
                     ->visit('/logout')
@@ -46,8 +46,8 @@ class SocialLoginTest extends DuskTestCase
                 ->visit('/login')
                 ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
                 ->press('@buttomFacebookLogin')
-                ->type('#email', 'testealerj@gmail.com')
-                ->type('#pass', 'Alerjteste123')
+                ->type('#email', env('SOCIAL_LOGIN_EMAIL'))
+                ->type('#pass', env('SOCIAL_LOGIN_PASS'))
                 ->press('#loginbutton')
                 ->waitForText('Quer propor um projeto na Alerj?')
                 ->visit('/logout')
@@ -72,8 +72,8 @@ class SocialLoginTest extends DuskTestCase
                 ->visit('/login')
                 ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
                 ->press('@buttomTwitterLogin')
-                ->type('#username_or_email', 'testealerj@gmail.com')
-                ->type('#password', 'Alerjteste123')
+                ->type('#username_or_email', env('SOCIAL_LOGIN_EMAIL'))
+                ->type('#password', env('SOCIAL_LOGIN_PASS'))
                 ->press('#allow')
                 ->pause(2000);
                 $this->page($browser);               
