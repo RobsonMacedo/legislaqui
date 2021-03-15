@@ -83,9 +83,8 @@ class AplicationFlowTest extends DuskTestCase
                 ->loginAs($user['id'])
                 ->visit($url)
                 ->press('@support')
-                ->pause(2000)
-                ->screenshot('supported');
-        } while ($total_support <= 5); //TODO: Não usar hardcode para o número de apoios. Pode usar o config('global.approvalGoal')
+                ->pause(2000);
+        } while ($total_support <= config('global.approvalGoal'));
         return $total_support;
     }
 
@@ -126,6 +125,15 @@ class AplicationFlowTest extends DuskTestCase
             json_encode([ProposalState::BillProject]) => false,
         ];
 
+        $inDiscussionArray = [
+            json_encode([ProposalState::All]) => true,
+            json_encode(ProposalState::openStates()) => false,
+            json_encode([ProposalState::Supported]) => false,
+            json_encode([ProposalState::Sent]) => false,
+            json_encode([ProposalState::Expired]) => false,
+            json_encode([ProposalState::BillProject]) => false,
+        ];
+
         $billProjectArray = [
             json_encode([ProposalState::All]) => true,
             json_encode(ProposalState::openStates()) => false,
@@ -145,8 +153,10 @@ class AplicationFlowTest extends DuskTestCase
             $sentToCommitteeArray,
             $comission,
             $billProjectArray,
+            $inDiscussionArray,
             $owner_name
         ) {
+            //Cidadão cria a ideia
             $cidadao
                 ->loginAs($citizen['id'])
                 ->visit('/')
@@ -156,59 +166,75 @@ class AplicationFlowTest extends DuskTestCase
                 ->type('@exposionidea_field', $newProposal['idea_exposition'])
                 ->click('@submitbuttonproposal')
                 ->assertSee('Aguardando moderação')
-                ->screenshot('1-citizen_create_the_proposal')
+                //->screenshot('1-citizen_create_the_proposal')
                 ->pause(3000);
             $url = $cidadao->driver->getCurrentURL();
             $last = explode('/', $url);
             $id_proposal = end($last);
             $this->search($cidadao, $newProposal, $allArray);
             $this->assertDatabaseHas('proposals', ['name' => $newProposal['name']]);
+
+            //Aprovador aprova a ideia
             $aprovador
                 ->loginAs($approval['id'])
                 ->visit('/admin/proposals/' . $id_proposal . '/response')
                 ->type('response', $answer)
                 ->press('@approve')
-                ->waitforText('Ideia Legislativa Aprovada com Sucesso')
-                ->screenshot('2-approval_approved_proposal');
+                ->waitforText(
+                    'Ideia Legislativa Aprovada com Sucesso'
+                    //->screenshot('2-approval_approved_proposal')
+                );
             $cidadao->loginAs($citizen['id']);
             $this->search($cidadao, $newProposal, $openProposalsArray);
 
-            ////Cidadão de 2 até 7
+            ////Cidadãos apoiam a ideia
             $this->support($id_proposal, $cidadao, $url);
 
+            //Cidadão ver que alcançou apoios suficientes
             $cidadao->visit('proposals/' . $id_proposal)->assertSee('Alcançou apoios suficientes');
+
+            //Aprovador vai mandar ára a comissão
             $aprovador
                 ->loginAs($approval['id'])
                 ->visit('/admin/proposals/approval-goal')
                 ->visit('/admin/proposals/' . $id_proposal . '/to-committee') //TODO: usar o botão
                 ->pause(1000)
-                ->screenshot('3-proposal_sent_to_comission')
+                //->screenshot('3-proposal_sent_to_comission')
                 ->pause(2000);
 
+            //Cidadão vai ver que foi enviado para a comissão
             $cidadao
                 ->loginAs($citizen['id'])
                 ->visit('proposals/' . $id_proposal)
-                ->assertSee('Enviada para a comissão')
-                ->screenshot('4-Enviada para a comissão');
+                ->assertSee(
+                    'Enviada para a comissão'
+                    //->screenshot('4-Enviada para a comissão')
+                );
             $this->search($cidadao, $newProposal, $sentToCommitteeArray);
 
+            //Usuário de comissão vai marcar "em discussão"
             $comissao
                 ->loginAs($comission['id'])
                 ->visit('/admin/proposals/in-committee')
-                ->visit('/admin/proposals/' . $id_proposal . '/committee-approval')
-                ->screenshot('5-comission_approved_proposal')
+                ->visit('/admin/proposals/' . $id_proposal . '/committee-approval') //TODO: usar o botão
+                //->screenshot('5-comission_approved_proposal')
                 ->pause(2000);
-            ////////             Pensar em desaprovar
+
+            //Cidadão vai ver que foi marcado como em discussão
             $cidadao
                 ->loginAs($citizen['id'])
                 ->visit('proposals/' . $id_proposal)
-                ->assertSee('Em discussão pela comissão')
-                ->screenshot('6-Em discussão pela comissão');
-            $this->search($cidadao, $newProposal, $billProjectArray);
+                ->assertSee(
+                    'Em discussão pela comissão'
+                    //->screenshot('6-Em discussão pela comissão')
+                );
+            $this->search($cidadao, $newProposal, $inDiscussionArray);
+
+            //Usuário de comissão vai assignar projeto de lei
             $comissao
                 ->loginAs($comission['id'])
                 ->visit('/admin/proposals/approved-by-committee')
-                ->visit('/admin/proposals/' . $id_proposal . '/bill-project')
+                ->visit('/admin/proposals/' . $id_proposal . '/bill-project') //TODO: usar o botão
                 ->type('@number', random_int(1, 50))
                 ->type('@year', random_int(2019, 2021))
                 ->type('@owner', $owner_name)
@@ -216,6 +242,8 @@ class AplicationFlowTest extends DuskTestCase
                 ->screenshot('7-comission_assigned_proposal')
                 ->press('@submit_button-billproject')
                 ->pause(2000);
+
+            //Cidadão vai ver que foi assignado projeto de lei
             $cidadao
                 ->loginAs($citizen['id'])
                 ->visit('proposals/' . $id_proposal)
