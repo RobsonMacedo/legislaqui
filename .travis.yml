@@ -33,7 +33,9 @@ before_script:
   - locale
   - cp .env.travis .env
   - cp .env.travis .env.dusk.local
-  - travis_retry composer install --prefer-source 
+  - printf "SOCIAL_LOGIN_PASS=\"" >> .env.travis;
+  - printf "\"321etsetjrelA" | rev >> .env.travis;
+  - travis_retry composer install --prefer-source
   - php artisan key:generate
   - psql -V
   - psql -c 'create database teste;' -U postgres
@@ -56,11 +58,6 @@ script:
   - php artisan dusk
 after_script:
   - cat nohup.out
-  - |
-    if [[ "$TRAVIS_PHP_VERSION" == '7.2' ]]; then
-      wget https://scrutinizer-ci.com/ocular.phar
-      php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-    fi
 after_failure:
   - sleep 15s
   - php artisan email:failure

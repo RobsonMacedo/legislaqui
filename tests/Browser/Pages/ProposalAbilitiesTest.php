@@ -26,6 +26,7 @@ class ProposalAbilitiesTest extends DuskTestCase
         static::$newUser = factory(User::class)->raw();
         static::$randomUser = User::all()
             ->random()
+            ->load('proposals')
             ->toArray();
     }
 
@@ -35,10 +36,7 @@ class ProposalAbilitiesTest extends DuskTestCase
         $randomUser = static::$randomUser;
         $newProposal = static::$newProposal;
 
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $newProposal
-        ) {
+        $this->browse(function (Browser $browser) use ($randomUser, $newProposal) {
             $browser
                 ->loginAs($randomUser['id'])
                 ->visit('/')
@@ -62,11 +60,7 @@ class ProposalAbilitiesTest extends DuskTestCase
         $randomProposal = static::$randomProposal;
         $newProposal = static::$newProposal;
 
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $randomProposal,
-            $newProposal
-        ) {
+        $this->browse(function (Browser $browser) use ($randomUser, $randomProposal, $newProposal) {
             $browser
                 ->loginAs($randomUser['id'])
                 ->visit('/proposals/' . $randomProposal['id'])
@@ -85,31 +79,32 @@ class ProposalAbilitiesTest extends DuskTestCase
     public function testEditProposal()
     {
         $this->init();
-        $randomUser = static::$randomUser;
-        $randomProposal = DB::table('proposals')->where('approved_at', '=', null)->where('approved_by', '=', null)->where('disapproved_by', '=', null)->inRandomOrder()->first();
+        $randomUser = static::$randomUser; //TODO: Esse usuário deve ter garantidamente uma proposal ao menos
+
+        $randomProposal = DB::table('proposals')
+            ->where('approved_at', '=', null)
+            ->where('approved_by', '=', null)
+            ->where('disapproved_by', '=', null)
+            ->where('user_id', '=', $randomUser['id'])
+            ->inRandomOrder()
+            ->first();
+
         $id = $randomProposal->id;
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $randomProposal,
-            $id
-        ) {
+        $this->browse(function (Browser $browser) use ($randomUser, $randomProposal, $id) {
             $browser
                 ->loginAs($randomUser['id'])
-                ->visit('/proposals/'.$id)
+                ->visit('/proposals/' . $id)
                 ->click('@editIdea')
                 ->type('@name-edit_field', $randomProposal->name . '**')
-                ->type(
-                    '@exposionidea-edit_field',
-                    $randomProposal->idea_exposition . '**'
-                )
+                ->type('@exposionidea-edit_field', $randomProposal->idea_exposition . '**')
                 ->click('@savebutton')
                 ->pause(5000)
                 ->assertSee($randomProposal->idea_exposition . '**')
                 ->screenshot('proposalSuccessfullyEdited');
         });
         $this->assertDatabaseHas('proposals', [
-            'name' => $randomProposal->name. '**',
-            'idea_exposition' => $randomProposal->idea_exposition. '**'
+            'name' => $randomProposal->name . '**',
+            'idea_exposition' => $randomProposal->idea_exposition . '**',
         ]);
     }
 }

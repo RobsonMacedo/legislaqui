@@ -34,17 +34,12 @@ class User extends Authenticatable implements Auditable
         'uuid',
         'last_login_at',
         'city_id',
-        'whatsapp'
+        'whatsapp',
     ];
 
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'last_login_at'
-    ];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at', 'last_login_at'];
 
-        /**
+    /**
      * The attributes that should be cast to native types.
      *
      * @var array
@@ -52,13 +47,12 @@ class User extends Authenticatable implements Auditable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'social' => 'array',
-        ];
+    ];
 
     public function setEmailAttribute($value)
     {
         $this->attributes['email'] = strtolower($value);
     }
-
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -80,12 +74,12 @@ class User extends Authenticatable implements Auditable
      User approvals Proposals */
     public function approvals()
     {
-        return $this->belongsToMany(
-            Proposal::class,
-            'approvals',
-            'user_id',
-            'proposal_id'
-        );
+        return $this->belongsToMany(Proposal::class, 'approvals', 'user_id', 'proposal_id');
+    }
+
+    public function proposals()
+    {
+        return $this->hasMany(Proposal::class);
     }
 
     /*EM TESTE DE USO - NÃO MEXER    não está usando esse código, porém no 'User/Show' há uma menção $user->likes_count
@@ -181,11 +175,7 @@ class User extends Authenticatable implements Auditable
     // Socialite
     public function socialNetworks()
     {
-        return $this->belongsToMany(
-            'App\Data\Models\SocialNetwork',
-            'social_users',
-            'user_id'
-        );
+        return $this->belongsToMany('App\Data\Models\SocialNetwork', 'social_users', 'user_id');
     }
 
     public function socialUser()
@@ -196,10 +186,7 @@ class User extends Authenticatable implements Auditable
     // Return users of system
     public function getUsersCommon()
     {
-        return $this->where(
-            'role_id',
-            get_role_id(Constants::ROLE_CIDADAO)
-        )->get();
+        return $this->where('role_id', get_role_id(Constants::ROLE_CIDADAO))->get();
     }
 
     // Return users Adm, Approvers and Commission
@@ -208,7 +195,7 @@ class User extends Authenticatable implements Auditable
         return $this->whereIn('role_id', [
             get_role_id(Constants::ROLE_ADMIN),
             get_role_id(Constants::ROLE_APPROVAL),
-            get_role_id(Constants::ROLE_COMMISSION)
+            get_role_id(Constants::ROLE_COMMISSION),
         ])->get();
     }
 

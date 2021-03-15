@@ -30,28 +30,30 @@ class ProposalInteractionsTest extends DuskTestCase
      */
     public function testLikeProposal()
     {
-        $this->init();
-        $randomUser = static::$randomUser;
-        $randomProposal = static::$randomProposal;
+        if (config('app.likes_enabled')) {
+            $this->init();
+            $randomUser = static::$randomUser;
+            $randomProposal = static::$randomProposal;
 
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $randomProposal
-        ) {
-            $browser
-                ->loginAs($randomUser['id'])
-                ->visit('/proposals/' . $randomProposal['id'])
-                ->press('@like')
-                ->assertDontSeeLink(
-                    'Sua curtida foi computada com sucesso. Caso queira apoiar oficialmente esta proposta, clique aqui.'
-                )
-                ->screenshot('proposalSuccessfullyLiked');
-        });
-        $this->assertDatabaseHas('likes', [
-            'like' => 1,
-            'proposal_id' => $randomProposal['id'],
-            'user_id' => $randomUser['id']
-        ]);
+            $this->browse(function (Browser $browser) use ($randomUser, $randomProposal) {
+                $browser
+                    ->loginAs($randomUser['id'])
+                    ->visit('/proposals/' . $randomProposal['id'])
+                    ->press('@like')
+                    ->assertDontSeeLink(
+                        'Sua curtida foi computada com sucesso. Caso queira apoiar oficialmente esta proposta, clique aqui.'
+                    )
+                    ->screenshot('proposalSuccessfullyLiked');
+            });
+
+            $this->assertDatabaseHas('likes', [
+                'like' => 1,
+                'proposal_id' => $randomProposal['id'],
+                'user_id' => $randomUser['id'],
+            ]);
+        } else {
+            $this->assertTrue(true, 'This should already work.');
+        }
     }
 
     /**
@@ -61,26 +63,27 @@ class ProposalInteractionsTest extends DuskTestCase
      */
     public function testDisLikeProposal()
     {
-        $this->init();
-        $randomUser = static::$randomUser;
-        $randomProposal = static::$randomProposal;
+        if (config('app.likes_enabled')) {
+            $this->init();
+            $randomUser = static::$randomUser;
+            $randomProposal = static::$randomProposal;
 
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $randomProposal
-        ) {
-            $browser
-                ->loginAs($randomUser['id'])
-                ->visit('/proposals/' . $randomProposal['id'])
-                ->press('@dislike')
-                ->assertDontSeeLink('Sua descurtida foi computada com sucesso.')
-                ->screenshot('proposalSuccessfullyDisLiked');
-        });
-        $this->assertDatabaseHas('likes', [
-            'like' => 0,
-            'proposal_id' => $randomProposal['id'],
-            'user_id' => $randomUser['id']
-        ]);
+            $this->browse(function (Browser $browser) use ($randomUser, $randomProposal) {
+                $browser
+                    ->loginAs($randomUser['id'])
+                    ->visit('/proposals/' . $randomProposal['id'])
+                    ->press('@dislike')
+                    ->assertDontSeeLink('Sua descurtida foi computada com sucesso.')
+                    ->screenshot('proposalSuccessfullyDisLiked');
+            });
+            $this->assertDatabaseHas('likes', [
+                'like' => 0,
+                'proposal_id' => $randomProposal['id'],
+                'user_id' => $randomUser['id'],
+            ]);
+        } else {
+            $this->assertTrue(true, 'This should already work.');
+        }
     }
 
     /**
@@ -92,12 +95,13 @@ class ProposalInteractionsTest extends DuskTestCase
     {
         $this->init();
         $randomUser = static::$randomUser;
-        $randomProposal =  DB::table('proposals')->whereNotNull('approved_at')->whereNotNull('approved_by')->inRandomOrder()->first();
+        $randomProposal = DB::table('proposals')
+            ->whereNotNull('approved_at')
+            ->whereNotNull('approved_by')
+            ->inRandomOrder()
+            ->first();
 
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $randomProposal
-        ) {
+        $this->browse(function (Browser $browser) use ($randomUser, $randomProposal) {
             $browser
                 ->loginAs($randomUser['id'])
                 ->visit('/proposals/' . $randomProposal->id)
@@ -116,24 +120,24 @@ class ProposalInteractionsTest extends DuskTestCase
     {
         $this->init();
         $randomUser = static::$randomUser;
-        $randomProposal = DB::table('proposals')->whereNotNull('approved_at')->whereNotNull('approved_by')->where('responder_id' ,'=',null)->inRandomOrder()->first();
+        $randomProposal = DB::table('proposals')
+            ->whereNotNull('approved_at')
+            ->whereNotNull('approved_by')
+            ->where('responder_id', '=', null)
+            ->inRandomOrder()
+            ->first();
 
-        $this->browse(function (Browser $browser) use (
-            $randomUser,
-            $randomProposal
-        ) {
+        $this->browse(function (Browser $browser) use ($randomUser, $randomProposal) {
             $browser
                 ->loginAs($randomUser['id'])
                 ->visit('/proposals/' . $randomProposal->id)
                 ->press('@follow')
-                ->assertDontSeeLink(
-                    'Esta Ideia Legislativa será acompanhada! Obrigado.'
-                )
+                ->assertDontSeeLink('Esta Ideia Legislativa será acompanhada! Obrigado.')
                 ->screenshot('proposalSuccessfullyFollowed');
         });
         $this->assertDatabaseHas('proposal_follows', [
             'user_id' => $randomUser['id'],
-            'proposal_id' => $randomProposal->id
+            'proposal_id' => $randomProposal->id,
         ]);
     }
 }
