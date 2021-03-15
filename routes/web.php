@@ -41,12 +41,6 @@ Route::get('/logout', function () {
 
 Route::group(['middleware' => 'navbarAndFooter'], function () {
     Route::group(['middleware' => 'web'], function () {
-        Route::get('/teste', 'SocialAuthController@redirectToProvider');
-
-        Route::get('/teste', function () {
-            return view('teste');
-        });
-
         Route::get('/login/{provider}', 'Auth\LoginController@redirectToProvider')->name(
             'social.login'
         );
