@@ -33,7 +33,7 @@ before_script:
   - locale
   - cp .env.travis .env
   - cp .env.travis .env.dusk.local
-  - travis_retry composer install --no-interaction --prefer-dist --no-suggest
+  - travis_retry composer install --prefer-source 
   - php artisan key:generate
   - psql -V
   - psql -c 'create database teste;' -U postgres
