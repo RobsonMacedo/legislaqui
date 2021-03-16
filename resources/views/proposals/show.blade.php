@@ -3,7 +3,6 @@
 @section('title', 'Propostas Legislativas')
 
 @section('content')
-    @include('partials.error')
     @include('partials.alert')
     <div class="cards-lista-ideias">
         <div class="row ideia">
