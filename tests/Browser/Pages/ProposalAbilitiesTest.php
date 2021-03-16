@@ -29,6 +29,9 @@ class ProposalAbilitiesTest extends DuskTestCase
             $query
                 ->select(DB::raw(1))
                 ->from('proposals')
+                ->whereNull('approved_at')
+                ->whereNull('approved_by')
+                ->whereNull('disapproved_by')
                 ->whereColumn('proposals.user_id', 'users.id');
         })
             ->inRandomOrder()
