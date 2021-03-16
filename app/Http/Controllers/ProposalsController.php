@@ -86,10 +86,7 @@ class ProposalsController extends Controller
 
     public function create()
     {
-        return view('proposals.create')->with(
-            'subjects',
-            app(Subjects::class)->getSelectOptions()
-        );
+        return view('proposals.create')->with('subjects', app(Subjects::class)->getSelectOptions());
     }
 
     /**
@@ -108,17 +105,11 @@ class ProposalsController extends Controller
 
             return redirect()
                 ->route('proposals')
-                ->with(
-                    'proposal_crud_msg',
-                    'Ideia Legislativa Removida com Sucesso'
-                );
+                ->with('proposal_crud_msg', 'Ideia Legislativa Removida com Sucesso');
         } else {
             return redirect()
                 ->route('proposals')
-                ->with(
-                    'error_msg',
-                    'Você não é o dono desta Ideia Legislativa'
-                );
+                ->with('error_msg', 'Você não é o dono desta Ideia Legislativa');
         }
     }
 
@@ -141,10 +132,7 @@ class ProposalsController extends Controller
         } else {
             return redirect()
                 ->route('proposals')
-                ->with(
-                    'error_msg',
-                    'Você não é o dono desta Ideia Legislativa'
-                );
+                ->with('error_msg', 'Você não é o dono desta Ideia Legislativa');
         }
     }
 
@@ -166,15 +154,9 @@ class ProposalsController extends Controller
         $follow = $this->proposalsRepository->follow($id, Auth::user()->id);
 
         if ($follow->wasRecentlyCreated) {
-            Session::flash(
-                'flash_msg',
-                'Esta Ideia Legislativa será acompanhada! Obrigado.'
-            );
+            Session::flash('flash_msg', 'Esta Ideia Legislativa será acompanhada! Obrigado.');
         } else {
-            Session::flash(
-                'flash_msg',
-                'Esta Ideia Legislativa já está sendo acompanhada!'
-            );
+            Session::flash('flash_msg', 'Esta Ideia Legislativa já está sendo acompanhada!');
         }
 
         $proposal = $this->proposalsRepository->find($id);
@@ -191,15 +173,9 @@ class ProposalsController extends Controller
         $success = $this->proposalsRepository->unfollow($id, Auth::user()->id);
 
         if ($success) {
-            Session::flash(
-                'flash_msg',
-                'Esta Ideia Legislativa não será mais acompanhada.'
-            );
+            Session::flash('flash_msg', 'Esta Ideia Legislativa não será mais acompanhada.');
         } else {
-            Session::flash(
-                'flash_msg',
-                'Você não está acompanhando essa ideia legislativa.'
-            );
+            Session::flash('flash_msg', 'Você não está acompanhando essa ideia legislativa.');
         }
 
         $proposal = $this->proposalsRepository->find($id);
@@ -246,10 +222,7 @@ class ProposalsController extends Controller
                         Like::where('uuid', $unique)
                             ->where('proposal_id', $id)
                             ->update(['like' => $action == 'like']);
-                        Session::flash(
-                            'flash_msg',
-                            'Você voltou a curtir essa Ideia Legislativa!'
-                        );
+                        Session::flash('flash_msg', 'Você voltou a curtir essa Ideia Legislativa!');
                         break;
                     case 'unlike':
                         Session::flash(
@@ -263,10 +236,7 @@ class ProposalsController extends Controller
             case '1':
                 switch ($action) {
                     case 'like':
-                        Session::flash(
-                            'error_msg',
-                            'Você já curtiu essa Ideia Legislativa!'
-                        );
+                        Session::flash('error_msg', 'Você já curtiu essa Ideia Legislativa!');
                         break;
                     case 'unlike':
                         Like::where('uuid', $unique)
@@ -289,7 +259,7 @@ class ProposalsController extends Controller
                             'uuid' => $unique,
                             'proposal_id' => $proposal->id,
                             'like' => $action == 'like',
-                            'ip_address' => Request::ip()
+                            'ip_address' => Request::ip(),
                         ]);
 
                         $approval_url = route('proposal.approval', $id);
@@ -305,7 +275,7 @@ class ProposalsController extends Controller
                             'uuid' => $unique,
                             'proposal_id' => $proposal->id,
                             'like' => $action == 'like',
-                            'ip_address' => Request::ip()
+                            'ip_address' => Request::ip(),
                         ]);
 
                         $msg = 'Sua descurtida foi computada com sucesso.';
@@ -355,24 +325,15 @@ class ProposalsController extends Controller
         } else {
             return redirect()
                 ->route('proposals')
-                ->with(
-                    'error_msg',
-                    'Você não é o dono desta Ideia Legislativa'
-                );
+                ->with('error_msg', 'Você não é o dono desta Ideia Legislativa');
         }
     }
 
     public function show($id)
     {
         if ($proposal = Proposal::withoutGlobalScopes()->findOrFail($id)) {
-            if (
-                !$proposal->isPublic() &&
-                !$proposal->userCanView(auth()->user()->id ?? null)
-            ) {
-                Session::flash(
-                    'flash_msg',
-                    'Para visualizar esta ideia, você deve fazer login'
-                );
+            if (!$proposal->isPublic() && !$proposal->userCanView(auth()->user()->id ?? null)) {
+                Session::flash('flash_msg', 'Para visualizar esta ideia, você deve fazer login');
 
                 return redirect()->guest('login');
             }
@@ -391,20 +352,14 @@ class ProposalsController extends Controller
         //dd($input);
 
         $proposal = Proposal::create($input);
-        $follow = $this->proposalsRepository->follow(
-            $proposal->id,
-            Auth::user()->id
-        );
+        $follow = $this->proposalsRepository->follow($proposal->id, Auth::user()->id);
         $proposal->subjects()->sync($formRequest->get('subjects'));
 
         event(new ProposalWasCreated($proposal));
 
         return redirect()
             ->route('proposal.show', ['proposal' => $proposal])
-            ->with(
-                'proposal_crud_msg',
-                'Ideia Legislativa Incluída com Sucesso'
-            );
+            ->with('proposal_crud_msg', 'Ideia Legislativa incluída com sucesso');
     }
 
     public function unlike($id)
@@ -433,11 +388,7 @@ class ProposalsController extends Controller
         //Get attributes from Proposals Eloquent
 
         $proposal_history->setRawAttributes(
-            array_except($proposal->getAttributes(), [
-                'id',
-                'created_at',
-                'updated_at'
-            ])
+            array_except($proposal->getAttributes(), ['id', 'created_at', 'updated_at'])
         );
         //dd($proposal_history);
         //Append Update Info
@@ -455,10 +406,7 @@ class ProposalsController extends Controller
 
         return redirect()
             ->route('proposal.show', ['proposal' => $proposal])
-            ->with(
-                'proposal_crud_msg',
-                'Ideia Legislativa Editada com Sucesso'
-            );
+            ->with('proposal_crud_msg', 'Ideia Legislativa editada com sucesso');
     }
 
     /**
@@ -480,11 +428,7 @@ class ProposalsController extends Controller
         $proposal_history = new ProposalHistory();
         //Get attributes from Proposals Eloquent
         $proposal_history->setRawAttributes(
-            array_except($proposal->getAttributes(), [
-                'id',
-                'created_at',
-                'updated_at'
-            ])
+            array_except($proposal->getAttributes(), ['id', 'created_at', 'updated_at'])
         );
 
         //Append Update Info + Response
@@ -502,9 +446,6 @@ class ProposalsController extends Controller
 
         return redirect()
             ->route('proposals')
-            ->with(
-                'proposal_crud_msg',
-                'Ideia Legislativa Respondida com Sucesso'
-            );
+            ->with('proposal_crud_msg', 'Ideia Legislativa respondida com sucesso');
     }
 }
