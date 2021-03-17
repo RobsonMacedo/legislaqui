@@ -47,8 +47,6 @@ class AplicationFlowTest extends DuskTestCase
             $browser
                 ->visit('/proposals')
                 ->type('@proposal-search', $ideia['name'])
-                ->press('@filterButton')
-                ->pause(2000)
                 ->select('state', $key)
                 //->screenshot(str_replace('\\', '', $key))
                 ->press('@filterButton')
@@ -61,6 +59,7 @@ class AplicationFlowTest extends DuskTestCase
             }
         }
     }
+
     public function find($id)
     {
         return Proposal::findOrFail($id);
@@ -197,10 +196,10 @@ class AplicationFlowTest extends DuskTestCase
             $aprovador
                 ->loginAs($approval['id'])
                 ->visit('/admin/proposals/approval-goal')
-                ->visit('/admin/proposals/' . $id_proposal . '/to-committee') //TODO: usar o botão
-                ->pause(1000)
+                ->script('document.querySelector(\'input[type="search"]\').value =' . $id_proposal.';
+                document.querySelector(\'input[type="search"]\').dispatchEvent(new KeyboardEvent(\'keyup\'));
+                document.querySelector(\'a[href="https://legislaqui.test/admin/proposals/'. $id_proposal.'/to-committee"]\').click();');
                 //->screenshot('3-proposal_sent_to_comission')
-                ->pause(2000);
 
             //Cidadão vai ver que foi enviado para a comissão
             $cidadao
@@ -216,8 +215,12 @@ class AplicationFlowTest extends DuskTestCase
             $comissao
                 ->loginAs($comission['id'])
                 ->visit('/admin/proposals/in-committee')
-                ->visit('/admin/proposals/' . $id_proposal . '/committee-approval') //TODO: usar o botão
-                //->screenshot('5-comission_approved_proposal')
+                ->script('document.querySelector(\'input[type="search"]\').value =' . $id_proposal.';
+                document.querySelector(\'input[type="search"]\').dispatchEvent(new KeyboardEvent(\'keyup\'));
+                document.querySelector(\'a[href="https://legislaqui.test/admin/proposals/'. $id_proposal.'/committee-approval"]\').click();');
+
+            //->screenshot('5-comission_approved_proposal')
+            $comissao
                 ->pause(2000);
 
             //Cidadão vai ver que foi marcado como em discussão
@@ -234,7 +237,10 @@ class AplicationFlowTest extends DuskTestCase
             $comissao
                 ->loginAs($comission['id'])
                 ->visit('/admin/proposals/approved-by-committee')
-                ->visit('/admin/proposals/' . $id_proposal . '/bill-project') //TODO: usar o botão
+                ->script('document.querySelector(\'input[type="search"]\').value =' . $id_proposal.';
+                document.querySelector(\'input[type="search"]\').dispatchEvent(new KeyboardEvent(\'keyup\'));
+                document.querySelector(\'a[href="https://legislaqui.test/admin/proposals/'. $id_proposal.'/bill-project"]\').click();');
+            $comissao
                 ->type('@number', random_int(1, 50))
                 ->type('@year', random_int(2019, 2021))
                 ->type('@owner', $owner_name)

@@ -16,7 +16,6 @@ class SocialLoginTest extends DuskTestCase
             
             $browser->visit('/logout')
                 ->waitForText('Registrar-se')
-                ->assertSee('Registrar-se')
                 ->screenshot('fim do login twitter com uma verificação');
             }
         
@@ -28,7 +27,6 @@ class SocialLoginTest extends DuskTestCase
                 $browser->waitForText('Quer propor um projeto na Alerj?')
                     ->visit('/logout')
                     ->waitForText('Registrar-se')
-                    ->assertSee('Registrar-se')
                     ->screenshot('fim do login twitter com duas verificações');
                 }
             }
@@ -44,7 +42,8 @@ class SocialLoginTest extends DuskTestCase
         {
             $browser
                 ->visit('/login')
-                ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
+                ->waitForText('Caso já possua uma conta de usuário, entre com seus dados abaixo')
+                ->assertSee('Caso já possua uma conta de usuário')
                 ->press('@buttomFacebookLogin')
                 ->type('#email', env('SOCIAL_LOGIN_EMAIL'))
                 ->type('#pass', env('SOCIAL_LOGIN_PASS'))
@@ -52,7 +51,6 @@ class SocialLoginTest extends DuskTestCase
                 ->waitForText('Quer propor um projeto na Alerj?')
                 ->visit('/logout')
                 ->waitForText('Registrar-se')
-                ->assertSee('Registrar-se')
                 ->screenshot('fim do login facebook');
         });
     }
@@ -70,12 +68,12 @@ class SocialLoginTest extends DuskTestCase
         {
             $browser
                 ->visit('/login')
-                ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
+                ->waitForText('Caso já possua uma conta de usuário, entre com seus dados abaixo')
+                ->assertSee('Caso já possua uma conta de usuário')
                 ->press('@buttomTwitterLogin')
                 ->type('#username_or_email', env('SOCIAL_LOGIN_EMAIL'))
                 ->type('#password', env('SOCIAL_LOGIN_PASS'))
-                ->press('#allow')
-                ->pause(2000);
+                ->press('#allow');
                 $this->page($browser);               
         });
     }
@@ -95,19 +93,21 @@ class SocialLoginTest extends DuskTestCase
         {
             $browser
                 ->visit('/login')
-                ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
+                ->waitForText('Caso já possua uma conta de usuário, entre com seus dados abaixo')
                 ->press('@buttomFacebookLogin')
-                ->pause(2000)
-                ->assertSee('Quer propor um projeto na Alerj?')
-                ->pause(2000)
+                /* ->waitForText('Entrar no Facebook')
+                ->type('#email', env('SOCIAL_LOGIN_EMAIL'))
+                ->type('#pass', env('SOCIAL_LOGIN_PASS'))
+                ->press('#loginbutton') */
+                ->waitForText('Quer propor um projeto na Alerj?')
                 ->press('@newProposalButton')
-                ->assertSee('Complete seu registro')
+                ->waitForText('Complete seu registro')
                 ->type('whatsapp', $ddd.$whatsapp)
                 ->type('#cpf', $user['cpf'])
                 ->select('city_id', random_int(1, 92))
                 ->check('#terms')
                 ->press('@registerButton')
-                ->assertSee('Quer propor um projeto na Alerj?')
+                ->waitForText('Quer propor um projeto na Alerj?')
                 ->press('@newProposalButton')
                 ->assertPathIs('/proposals/create')
                 ->screenshot('Fim do Cadastro Facebook') 
@@ -132,9 +132,11 @@ class SocialLoginTest extends DuskTestCase
                 ->visit('/login')
                 ->assertSee('Caso já possua uma conta de usuário, entre com seus dados abaixo')
                 ->press('@buttomTwitterLogin')
-                ->pause(2000)
+                /* ->waitForText('Autorizar o acesso de')
+                ->type('#username_or_email', env('SOCIAL_LOGIN_EMAIL'))
+                ->type('#password', env('SOCIAL_LOGIN_PASS'))
+                ->press('#allow') */
                 ->assertSee('Quer propor um projeto na Alerj?')
-                ->pause(2000)
                 ->press('@newProposalButton')
                 ->assertSee('Complete seu registro')
                 ->type('whatsapp', $ddd.$whatsapp)
