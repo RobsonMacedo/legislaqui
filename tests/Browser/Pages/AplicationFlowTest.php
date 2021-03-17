@@ -198,7 +198,7 @@ class AplicationFlowTest extends DuskTestCase
                 ->visit('/admin/proposals/approval-goal')
                 ->script('document.querySelector(\'input[type="search"]\').value =' . $id_proposal.';
                 document.querySelector(\'input[type="search"]\').dispatchEvent(new KeyboardEvent(\'keyup\'));
-                document.querySelector(\'a[href="https://legislaqui.test/admin/proposals/'. $id_proposal.'/to-committee"]\').click();');
+                document.querySelector(\'a[href="'.route('admin.proposal.toCommittee', ['id'=>$id_proposal]).'"]\').click();');
                 //->screenshot('3-proposal_sent_to_comission')
 
             //Cidadão vai ver que foi enviado para a comissão
@@ -217,7 +217,7 @@ class AplicationFlowTest extends DuskTestCase
                 ->visit('/admin/proposals/in-committee')
                 ->script('document.querySelector(\'input[type="search"]\').value =' . $id_proposal.';
                 document.querySelector(\'input[type="search"]\').dispatchEvent(new KeyboardEvent(\'keyup\'));
-                document.querySelector(\'a[href="https://legislaqui.test/admin/proposals/'. $id_proposal.'/committee-approval"]\').click();');
+                document.querySelector(\'a[href="'.route('admin.proposal.committee-approval', ['id'=>$id_proposal]).'"]\').click();');
 
             //->screenshot('5-comission_approved_proposal')
             $comissao
@@ -239,7 +239,7 @@ class AplicationFlowTest extends DuskTestCase
                 ->visit('/admin/proposals/approved-by-committee')
                 ->script('document.querySelector(\'input[type="search"]\').value =' . $id_proposal.';
                 document.querySelector(\'input[type="search"]\').dispatchEvent(new KeyboardEvent(\'keyup\'));
-                document.querySelector(\'a[href="https://legislaqui.test/admin/proposals/'. $id_proposal.'/bill-project"]\').click();');
+                document.querySelector(\'a[href="'.route('admin.proposal.bill-project', ['id'=>$id_proposal]).'"]\').click();');
             $comissao
                 ->type('@number', random_int(1, 50))
                 ->type('@year', random_int(2019, 2021))
